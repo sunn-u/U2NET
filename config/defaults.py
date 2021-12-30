@@ -1,5 +1,7 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
+
 import torch
-from sunn_models.config.config import CfgNode as CN
+from config.config import CfgNode as CN
 
 
 _C = CN()

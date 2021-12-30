@@ -1,8 +1,10 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
+
 import copy
 import torch
 import torch.nn as nn
 
-from sunn_models.models.base import conv_block, conv_sig_block, down_sampling_layer, up_sampling_layer
+from models.base import conv_block, conv_sig_block, down_sampling_layer, up_sampling_layer
 
 
 # todo : 채널 input - output 사이즈와 feature map 자체의 사이즈 헷갈리지 않기

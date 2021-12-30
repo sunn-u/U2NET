@@ -1,7 +1,8 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
 
-from sunn_models import default_parser
-from sunn_models.config.config import get_config
-from sunn_models.engine.trainer import Trainer
+import default_parser
+from config.config import get_config
+from engine.trainer import Trainer
 
 
 def setup():

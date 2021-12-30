@@ -1,9 +1,11 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
+
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from sunn_models.datasets.loader.basic import BasicDataset
 
-from sunn_models.datasets.utils import split_train_val
-from sunn_models.datasets.augmentation import Augmentation
+from datasets.loader.basic import BasicDataset
+from datasets.utils import split_train_val
+from datasets.augmentation import Augmentation
 
 '''
 1. resized to 320x320

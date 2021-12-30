@@ -1,3 +1,5 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
+
 import glob
 import random
 

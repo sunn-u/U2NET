@@ -1,3 +1,4 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
 
 class CfgNode:
 

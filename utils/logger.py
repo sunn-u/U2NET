@@ -1,3 +1,5 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
+
 import os
 import logging
 from logging.handlers import TimedRotatingFileHandler

@@ -1,7 +1,9 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
+
 import torch
 
-from sunn_models.models.rsu import U2NET
-from sunn_models.models.base import weight_init_xavier
+from models.rsu import U2NET
+from models.base import weight_init_xavier
 
 
 def build_model(cfg):

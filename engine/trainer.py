@@ -1,13 +1,15 @@
+# Coding by SunWoo(tjsntjsn20@gmail.com)
+
 import time
 import os
 import torch
 
-from sunn_models.models.build import build_model
-from sunn_models.datasets.build import build_train_dataset
-from sunn_models.build.optimizer import build_optimizer
-from sunn_models.build.loss import Loss
-from sunn_models.utils.logger import set_logger
-from sunn_models.evaluation.measures import Measures
+from models.build import build_model
+from datasets.build import build_train_dataset
+from build.optimizer import build_optimizer
+from build.loss import Loss
+from utils.logger import set_logger
+from evaluation.measures import Measures
 
 
 class Trainer:
