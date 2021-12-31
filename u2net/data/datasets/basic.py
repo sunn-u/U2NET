@@ -3,7 +3,6 @@
 import cv2
 
 
-# for DUTS dataset : http://saliencydetection.net/duts/
 class BasicDataset:
     def __init__(self, samples, transform=None):
         self.samples = samples
