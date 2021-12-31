@@ -1,11 +1,12 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
-import cv2
+from ..utils import load_image
 
 
-class BasicDataset:
-    def __init__(self, samples: list, transform=None):
+class BasicDataset(object):
+    def __init__(self, samples: list, type: str, transform=None):
         self.samples = samples
+        self.type = type
         self.transform = transform
 
     def __len__(self):
@@ -14,8 +15,8 @@ class BasicDataset:
     def __getitem__(self, idx):
         img_dir, mask_dir = self.samples[idx]
 
-        img = cv2.imread(img_dir)
-        mask = cv2.cvtColor(cv2.imread(mask_dir), cv2.COLOR_BGR2GRAY)
+        img = load_image(img_dir, type=self.type)
+        mask = load_image(mask_dir, type='GRAY')
 
         if self.transform is not None:
             img = self.transform(img)
