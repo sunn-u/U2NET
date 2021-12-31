@@ -4,8 +4,10 @@ import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
+from ..data.types import Logging
 
-def set_logger(save_dir):
+
+def set_logger(save_dir: str) -> Logging:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
