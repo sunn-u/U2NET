@@ -1,0 +1,71 @@
+MODEL:
+  META_ARCHITECTURE: U2NET
+  RSU_DICT:
+    RSU-E7: [3, 32, 64]
+    RSU-E6: [64, 32, 128]
+    RSU-E5: [128, 64, 256]
+    RSU-E4: [256, 128, 512]
+    RSU-4F-1: [512, 256, 512]
+    RSU-4F-2: [512, 256, 512]
+    RSU-4F-3: [1024, 256, 512]
+    RSU-D4: [1024, 128, 256]
+    RSU-D5: [512, 64, 128]
+    RSU-D6: [256, 32, 64]
+    RSU-D7: [128, 16, 64]
+  WEIGHT:
+  DEVICE: CPU
+
+DATASETS:
+  CLASS:
+    FACTORY_TRAIN: BasicDataset
+    FACTORY_TEST: BasicDataset
+  DIRECTORY:
+    TRAIN: [images, masks]
+    TEST: [images, masks]
+  INFORMATION:
+    IMG_EXT: ['jpg', 'JPG', 'png', 'PNG']
+    TYPE: RGB
+    SPLIT_PERCENT: 0.8
+    SPLIT_SHUFFLE: True
+
+DATALOADER:
+  SHUFFLE: True
+  NUM_WORKERS: 8
+  DROP_LAST: True
+  AUGMENTATION:
+    USE: True
+    SAVE: True
+    MULTIPLE: 1.0 # 0.1~1.0
+    FUNC:
+      HorizontalFlipping: True
+  TRANSFORMS:
+    ToTensor: True
+    Resize:
+      size: 320
+      mode: 2
+    RandomVerticalFlip: True
+    CenterCrop: 288
+
+SOLVER:
+  LOG:
+    LEVEL: 10 #debug
+    STEPS: 10
+  OPTIMIZER:
+    BASE_LR: 1e-3
+    BETAS: (0.9, 0.999)
+    EPS: 1e-8
+    WEIGHT_DECAY: 0
+    MOMENTUM: 0.9
+  EPOCHS: 100
+  IMS_PER_BATCH: 32
+  CHECKPOINT_PERIOD: 2000
+
+TEST:
+  IMS_PER_BATCH: 1
+  SKIP_PERFORMANCE_EVAL: True
+
+OUTPUT_DIR: C:\Users\tjsnt\U2NET\OUTPUTS
+DATA_DIR: C:\Users\tjsnt\U2NET
+DISTRIBUTED_BACKEND:
+LOG_LOSS_PERIOD:
+DTYPE: float32
