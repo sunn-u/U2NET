@@ -4,7 +4,7 @@ import cv2
 
 
 class BasicDataset:
-    def __init__(self, samples, transform=None):
+    def __init__(self, samples: list, transform=None):
         self.samples = samples
         self.transform = transform
 
