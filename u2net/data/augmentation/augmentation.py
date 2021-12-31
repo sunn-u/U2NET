@@ -24,10 +24,11 @@ class HorizontalFlipping(object):
 
 
 class Augmentation(object):
-    def __init__(self, type: str, save: bool, data_dir: str, funcs=None):
+    def __init__(self, type: str, save: bool, data_dir: str, multiple: float, funcs=None):
         self.type = type
         self.save = save
         self.funcs = funcs
+        self.multiple = multiple
 
         self.augmentation_img_file, self.augmentation_mask_file = self._get_augmentation_dir(data_dir)
 
@@ -42,7 +43,7 @@ class Augmentation(object):
 
         '''
 
-        using_list = self._get_using_list(dataset_list=dataset_list, multiple=multiple)
+        using_list = self._get_using_list(dataset_list=dataset_list)
         augmentation_samples = []
         for idx, (img_dir, mask_dir) in enumerate(using_list):
             img = load_image(img_dir, type=self.type)
@@ -74,14 +75,14 @@ class Augmentation(object):
         aug_mask_dir = os.path.join(self.augmentation_mask_file, f'{idx}_{os.path.basename(mask_dir)}')
         return aug_img_dir, aug_mask_dir
 
-    def _get_using_list(self, dataset_list: list, multiple: float) -> list:
+    def _get_using_list(self, dataset_list: list) -> list:
         '''
         :param dataset_list: list ex.[(img_dir, mask_dir) ...]
         :param multiple: float >> 0.1 ~ 1.0
             >> 전체 데이터셋 중에 얼마나 증식에 사용할건지를 결정
         '''
 
-        need_counts = int(len(dataset_list) * multiple)
+        need_counts = int(len(dataset_list) * self.multiple)
         assert need_counts <= len(dataset_list)
-        assert multiple > 0
+        assert self.multiple > 0
         return random.sample(dataset_list, need_counts)

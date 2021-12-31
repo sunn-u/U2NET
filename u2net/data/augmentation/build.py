@@ -16,5 +16,6 @@ def build_augmentation(configs: dict):
         type=configs["DATASETS"]["INFORMATION"]["TYPE"],
         save=augmentation_configs["SAVE"],
         data_dir=configs["DATA_DIR"],
+        multiple=augmentation_configs["MULTIPLE"],
         funcs=funcs
     )
