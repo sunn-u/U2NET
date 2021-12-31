@@ -1,6 +1,7 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
 from u2net.data.transforms.transforms import TRANSFORMS_REGISTRY
+from ..types import PIL
 
 
 def build_transforms(configs: dict):
@@ -17,7 +18,7 @@ class Compose(object):
     def __init__(self, transforms):
         self.transforms = transforms
 
-    def __call__(self, image):
+    def __call__(self, image: PIL):
         for t in self.transforms:
             image = t(image)
         return image
