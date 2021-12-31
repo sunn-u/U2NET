@@ -6,6 +6,8 @@ from torchvision.transforms import functional as F
 from torchvision.transforms.functional import _interpolation_modes_from_int
 from fvcore.common.registry import Registry
 
+from ..types import PIL, Tensor
+
 TRANSFORMS_REGISTRY = Registry("TRANSFORMS")
 TRANSFORMS_REGISTRY.__doc__ = " Registry for Transforms "
 
@@ -15,7 +17,7 @@ class ToTensor(object):
     def __init__(self, value: bool):
         self.use = value
 
-    def __call__(self, image):
+    def __call__(self, image: PIL):
         assert self.use == True
         return F.to_tensor(image)
 
@@ -33,7 +35,7 @@ class Resize(object):
         self.size = value["size"]
         self.mode = _interpolation_modes_from_int(value["mode"])
 
-    def __call__(self, image):
+    def __call__(self, image: Tensor):
         return F.reisze(image, [self.size, self.size], interpolation=self.mode)
 
 
@@ -42,7 +44,7 @@ class RandomVerticalFlip(object):
     def __init__(self, value: bool):
         self.use = value
 
-    def __call__(self, image):
+    def __call__(self, image: Tensor):
         assert self.use == True
         if random.choice([0, 1]):
             return F.vflip(image)
@@ -54,5 +56,5 @@ class CenterCrop:
     def __init__(self, value: int):
         self.size = value
 
-    def __call__(self, image):
+    def __call__(self, image: Tensor):
         return F.center_crop(image, [self.size, self.size])
