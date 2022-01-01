@@ -1,0 +1,34 @@
+MODEL:
+  WEIGHT:
+  TRAIN: True
+DATASETS:
+  DIRECTORY:
+    TRAIN: [images, masks]
+    TEST: [images, masks]
+  INFORMATION:
+    SPLIT_PERCENT: 0.8
+DATALOADER:
+  NUM_WORKERS: 8
+  AUGMENTATION:
+    USE: True
+    SAVE: True
+    MULTIPLE: 1.0 # 0.1~1.0
+    FUNC:
+      HorizontalFlipping: True
+  TRANSFORMS:
+    Resize:
+      size: 320
+      mode: 2
+    RandomVerticalFlip: True
+    CenterCrop: 288
+SOLVER:
+  LOG:
+    LEVEL: 10 #debug
+  EPOCHS: 100
+  IMS_PER_BATCH: 32
+  CHECKPOINT_PERIOD: 2000
+TEST:
+  IMS_PER_BATCH: 1
+  SKIP_PERFORMANCE_EVAL: True
+OUTPUT_DIR: C:\Users\tjsnt\U2NET\OUTPUTS
+DATA_DIR: C:\Users\tjsnt\U2NET
