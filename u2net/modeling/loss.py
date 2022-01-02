@@ -4,7 +4,7 @@ import torch.nn as nn
 from fvcore.common.registry import Registry
 
 LOSS_REGISTRY = Registry("LOSS")
-LOSS_REGISTRY.__doc__ = " Registry for LOSS "
+LOSS_REGISTRY.__doc__ = " Registry for Loss "
 
 
 @LOSS_REGISTRY.register()

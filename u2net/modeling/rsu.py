@@ -3,12 +3,14 @@
 import copy
 import torch
 import torch.nn as nn
+from fvcore.common.registry import Registry
 
-from models.base import conv_block, conv_sig_block, down_sampling_layer, up_sampling_layer
+from u2net.modeling.base import conv_block, conv_sig_block, down_sampling_layer, up_sampling_layer
 
+MODEL_REGISTRY = Registry("MODEL")
+MODEL_REGISTRY.__doc__ = " Registry for Model "
 
 # todo : 채널 input - output 사이즈와 feature map 자체의 사이즈 헷갈리지 않기
-
 
 class ResidualUBlocks(nn.Module):
     def __init__(self, L, input_f, interval_f, output_f, dilation, padding):
@@ -120,7 +122,7 @@ class Residual4FUBlocks(nn.Module):
 
         return out
 
-
+@MODEL_REGISTRY.register()
 class U2NET(nn.Module):
     def __init__(self, rsu_dict: dict):
         super(U2NET, self).__init__()
