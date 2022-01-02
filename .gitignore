@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+u2net/build/
 develop-eggs/
 dist/
 downloads/
