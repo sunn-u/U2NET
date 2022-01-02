@@ -2,9 +2,10 @@
 
 from u2net.data.augmentation.augmentation import AUGMENTATION_REGISTRY
 from .augmentation import Augmentation
+from ..types import DictConfigs
 
 
-def build_augmentation(configs: dict):
+def build_augmentation(configs: DictConfigs):
     augmentation_configs = configs["DATALOADER"]["AUGMENTATION"]
     funcs = []
     for name, value in augmentation_configs["FUNC"].items():

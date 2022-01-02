@@ -1,10 +1,10 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
 from u2net.data.transforms.transforms import TRANSFORMS_REGISTRY
-from ..types import PIL
+from ..types import PIL, DictConfigs
 
 
-def build_transforms(configs: dict):
+def build_transforms(configs: DictConfigs):
     transforms_configs = configs["DATALOADER"]["TRANSFORMS"]
     funcs = []
     for name, value in transforms_configs.items():

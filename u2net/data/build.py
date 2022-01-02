@@ -7,9 +7,10 @@ from . import datasets as Data
 from .augmentation import build_augmentation
 from .transforms import build_transforms
 from .utils import make_samples
+from .types import DictConfigs
 
 
-def build_loader(configs: dict, is_train: bool):
+def build_loader(configs: DictConfigs, is_train: bool):
     data_main_dir = configs["DATA_DIR"]
     dataset_name = configs["DATASETS"]["DIRECTORY"]["TRAIN"] \
         if is_train else configs["DATASETS"]["DIRECTORY"]["TEST"]
