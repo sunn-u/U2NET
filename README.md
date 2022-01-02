@@ -7,9 +7,13 @@
 
 ## ToDo-List
 - [ ] model restructure
+    - [ ] hooks
     - [ ] save best-model
     - [ ] loss function
-    - [ ] hooks
+    - [ ] scheduler
+    - [ ] logging : eval metrics
+    - [ ] build testor
 - [ ] evaluation : add measures
 - [ ] data-loader : mapping
 - [ ] training test
+- [ ] create demo script
