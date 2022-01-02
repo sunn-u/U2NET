@@ -3,7 +3,7 @@
 import os
 import hydra
 
-from u2net.data.types import DictConfigs, Logging
+from u2net.data.types import DictConfigs
 from u2net.utils.defaults import load_yaml, merge_configs, setup_configs, save_configs
 from u2net.utils.logger import set_logger
 from u2net.engine import build_trainer, build_tester
@@ -30,7 +30,7 @@ def main(default_config: DictConfigs):
     save_configs(configs, save_dir=configs["OUTPUT_DIR"])
 
     # Build logger.
-    logger = set_logger(level=configs["LOG"]["LEVEL"], save_dir=configs["OUTPUT_DIR"])
+    logger = set_logger(level=configs["SOLVER"]["LOG"]["LEVEL"], save_dir=configs["OUTPUT_DIR"])
 
     # Start train or infer.
     if configs["MODEL"]["TRAIN"]:

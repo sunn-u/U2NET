@@ -7,9 +7,9 @@ from logging.handlers import TimedRotatingFileHandler
 from ..data.types import Logging
 
 
-def set_logger(save_dir: str) -> Logging:
+def set_logger(level: int, save_dir: str) -> Logging:
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(level)
     formatter = logging.Formatter(
         '[%(asctime)s] [%(filename)s > %(funcName)s > %(lineno)d] : %(message)s',
         datefmt='%Y%m%d-%H-%M'
