@@ -2,6 +2,7 @@
 
 import os
 import random
+import PIL.ImageOps as ImageOps
 from fvcore.common.registry import Registry
 
 from ..types import PIL
@@ -18,8 +19,8 @@ class HorizontalFlipping(object):
 
     def __call__(self, image: PIL, target: PIL):
         assert self.use == True
-        image = image.transpose(image.FL)
-        target = target.transpose(target.FL)
+        image = ImageOps.mirror(image)
+        target = ImageOps.mirror(target)
         return  image, target
 
 
