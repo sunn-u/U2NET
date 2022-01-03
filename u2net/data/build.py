@@ -24,7 +24,7 @@ def build_loader(configs: DictConfigs, is_train: bool):
 
     # Transforms & Augmentation.
     Transforms = build_transforms(configs=configs)
-    if  is_train and configs["DATALOADER"]["AUGMENTATION"]["USE"]:
+    if is_train and configs["DATALOADER"]["AUGMENTATION"]["USE"]:
         Augmentation = build_augmentation(configs=configs)
         samples += Augmentation(dataset_list=samples)
 
