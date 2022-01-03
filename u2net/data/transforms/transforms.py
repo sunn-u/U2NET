@@ -36,7 +36,7 @@ class Resize(object):
         self.mode = _interpolation_modes_from_int(value["mode"])
 
     def __call__(self, image: Tensor):
-        return F.reisze(image, [self.size, self.size], interpolation=self.mode)
+        return F.resize(image, [self.size, self.size], interpolation=self.mode)
 
 
 @TRANSFORMS_REGISTRY.register()
