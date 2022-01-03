@@ -1,5 +1,6 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
+import os
 import glob
 import random
 from PIL import Image
@@ -20,10 +21,13 @@ def save_image(img: PIL, save_dir: str):
 
 
 def get_all_items(directory: str, img_ext: list) -> list:
+    if not os.path.exists(directory):
+        raise FileNotFoundError(f'There is no folder for {directory}.')
+
     file_list = []
     for ext in img_ext:
         file_list += glob.glob(f'{directory}/**/*.{ext}', recursive=True)
-    return file_list
+    return list(set(file_list))
 
 
 def make_samples(img_dir: str, mask_dir: str, img_ext: list) -> list:
