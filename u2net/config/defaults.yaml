@@ -60,7 +60,7 @@ SOLVER:
     LEVEL: 10 #debug
   OPTIMIZER:
     BASE_LR: 1e-3
-    BETAS: (0.9, 0.999)
+    BETAS: [0.9, 0.999]
     EPS: 1e-8
     WEIGHT_DECAY: 0
   SCHEDULER:
