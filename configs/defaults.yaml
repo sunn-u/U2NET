@@ -1,0 +1,7 @@
+defaults:
+  - data: duts
+  - evaluation: f1_score
+  - logs: defaults
+  - model: u2net
+  - solver: adam
+  - user:

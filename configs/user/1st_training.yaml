@@ -1,0 +1,20 @@
+model:
+  weight:
+  device:
+  train: True
+data:
+  dataset:
+    train:
+    test:
+  dataloader:
+    augmentation:
+      use: False
+      save: True
+      multiple: 1.0
+      func:
+        HorizontalFlipping: True
+training:
+  epochs: 100
+  ims_per_batch: 32
+  checkpoint_period: 1
+  output_dir:

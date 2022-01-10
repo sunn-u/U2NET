@@ -11,8 +11,8 @@ dataloader:
   drop_last: True
   transforms:
     ToTensor: True
-      Resize:
-        size: 320
-        mode: 2
-      RandomVerticalFlip: True
-      CenterCrop: 288
+    Resize:
+      size: 320
+      mode: 2
+    RandomVerticalFlip: True
+    CenterCrop: 288
