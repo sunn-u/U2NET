@@ -1,0 +1,18 @@
+datasets:
+  name: BasicDataset
+  information:
+    img_ext: ['jpg', 'JPG', 'png', 'PNG']
+    type: RGB
+    split_percent: 0.8
+    split_shuffle: True
+dataloader:
+  shuffle: True
+  num_workers: 8
+  drop_last: True
+  transforms:
+    ToTensor: True
+      Resize:
+        size: 320
+        mode: 2
+      RandomVerticalFlip: True
+      CenterCrop: 288

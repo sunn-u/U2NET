@@ -1,0 +1,7 @@
+defaults:
+  - dataset: duts
+  - evalutation: f1_score
+  - logs: defaults
+  - model: u2net
+  - optimizer: adam
+  - user:

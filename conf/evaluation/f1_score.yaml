@@ -1,0 +1,4 @@
+evaluation:
+  name: F1_SCORE
+  parameters:
+    smooth: 0.0005
