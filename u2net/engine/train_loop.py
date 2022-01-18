@@ -1,7 +1,28 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
-from ..utils.checkpoint import CheckPointer
-from ..data.types import Tensor
+import logging
+import weakref
+
+from ..data.types import Tensor, List
+from u2net.utils.events import EventStorage, get_event_storage
+
+
+class HookBase(object):
+    '''
+        Base class for hooks.
+    '''
+
+    def before_train(self):
+        pass
+
+    def before_step(self):
+        pass
+
+    def after_step(self):
+        pass
+
+    def after_train(self):
+        pass
 
 
 class TrainerBase(object):
@@ -14,32 +35,53 @@ class TrainerBase(object):
         self.start_epoch: int = 0
         self.max_epoch: int = 0
 
+        self._hooks: List[HookBase] = []
+        self.storage: EventStorage
+
+    def register_hooks(self, hooks):
+        hooks = [h for h in hooks if h is not None]
+        for h in hooks:
+            # for weak references.
+            h.trainer = weakref.proxy(self)
+        return self._hooks.extend(hooks)
+
     def train(self, start_epoch: int, max_epoch: int):
+        logger = logging.getLogger(__name__)
+        logger.info("Start Training!")
+
         self.epoch = self.start_epoch = start_epoch
         self.max_epoch = max_epoch
 
-        self.before_train()
-        for self.epoch in range(self.start_epoch, self.max_epoch):
-            self.before_step()
-            self.run_step()
-            self.after_step()
-        self.epoch += 1
-        self.after_train()
+        with EventStorage() as self.storage:
+            try:
+                self.before_train()
+                for self.epoch in range(self.start_epoch, self.max_epoch):
+                    self.before_step()
+                    self.run_step()
+                    self.after_step()
+                self.epoch += 1
+            finally:
+                self.after_train()
 
     def before_train(self):
-        pass
+        for h in self._hooks:
+            h.before_train()
 
     def before_step(self):
-        pass
+        for h in self._hooks:
+            h.before_step()
 
     def run_step(self):
-        pass
+        raise NotImplementedError
 
     def after_step(self):
-        pass
+        for h in self._hooks:
+            h.after_step()
+        self.storage.epoch += 1
 
     def after_train(self):
-        pass
+        for h in self._hooks:
+            h.after_train()
 
 
 class SimpleTrainer(TrainerBase):
@@ -50,45 +92,36 @@ class SimpleTrainer(TrainerBase):
             - 3. Update the model with the optimizer.
     '''
 
-    def __init__(self, configs, logger, model, optimizer, criterion):
+    def __init__(self, configs, model, optimizer, criterion, loader):
         super().__init__()
 
         self.configs = configs
-        self.logger = logger
         self.model = model
         self.optimizer = optimizer
         self.criterion = criterion
-        self.checkpointer = CheckPointer(save_dir=self.configs["OUTPUT_DIR"], logger=self.logger)
-        self.checkpoint = -1
+        self.loader = loader
 
-    def before_train(self):
-        # Load model
-        self.model = self.checkpointer.load(
-            model=self.model,
-            weight_dir=self.configs["MODEL"]["WEIGHT"]
-        )
-
-    def run_step(self, x: Tensor, target: Tensor):
+    def run_step(self):
         self.model.train()
+        losses = 0.
+        for idx, (data, target) in enumerate(self.loader):
+            if idx == 2:
+                break
+            data = data.to(self.configs.user.model.device)
+            target = target.to(self.configs.user.model.device)
 
-        pred_masks, fuse_mask = self.model(x)
-        loss = self.criterion(gt_mask=target, pred_masks=pred_masks, fuse_mask=fuse_mask)
+            pred_masks, fuse_mask = self.model(data)
+            loss = self.criterion(gt_mask=target, pred_masks=pred_masks, fuse_mask=fuse_mask)
 
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+            self.optimizer.zero_grad()
+            loss.backward()
+            losses += loss
+        losses /= len(self.loader)
 
-        self.logger.debug(f'[{self.epoch}/{self.max_epoch}] TRAIN LOSS :: {loss.item()}')
+        self._update_results(loss_dict=dict(loss=losses))
 
-    def after_step(self, x: Tensor, target: Tensor, save: bool):
-        if save:
-            self.checkpointer.save(model=self.model, epoch=self.epoch, last=False)
-        self.model.eval()
-
-        pred_masks, fuse_mask = self.model(x)
-        loss = self.criterion(gt_mask=target, pred_masks=pred_masks, fuse_mask=fuse_mask)
-        return loss.item(), fuse_mask
-
-    def after_train(self):
-        # Save last model
-        self.checkpointer.save(model=self.model, epoch=self.epoch, last=True)
+    def _update_results(self, loss_dict: dict):
+        storage = get_event_storage()
+        storage.put_scalars(
+            loss={k: v.detach().cpu.item() for k, v in loss_dict.items()}
+        )
