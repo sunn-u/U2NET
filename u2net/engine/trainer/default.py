@@ -1,15 +1,38 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
 import torch
-import copy
+import logging
 
 from . import TRAINER_REGISTRY
+from .. import hooks
 from u2net.engine.train_loop import TrainerBase, SimpleTrainer
-from u2net.data.types import DictConfigs, Logging
+from u2net.data.types import DictConfigs
 from u2net.data import build_loader
+from u2net.utils.checkpoint import CheckPointer
 from u2net.modeling import build_model, build_criterion
 from u2net.solver import build_optimizer, build_lr_scheduler
 from u2net.evaluation import build_evaluation
+
+
+class Testor(object):
+    def __init__(self, configs: DictConfigs, loader, evaluator):
+        super().__init__()
+        self.configs = configs
+        self.loader = loader
+        self.evaluator = evaluator
+
+    def __call__(self, model):
+        model.eval()
+
+        gt_list, fuse_list = [], []
+        for data, target in self.loader:
+            data = data.to(self.configs.user.model.device)
+            _, fuse_mask = model(data)
+            gt_list.append(target.to(self.configs.user.model.device))
+            fuse_list.append(fuse_mask)
+
+        eval_results = self.evaluator(gt_masks=torch.cat(gt_list), pred_masks=torch.cat(fuse_list))
+        return eval_results
 
 
 @TRAINER_REGISTRY.register()
@@ -18,79 +41,55 @@ class DefaultTrainer(TrainerBase):
         A trainer with default training logic.
     '''
 
-    def __init__(self, configs: DictConfigs, logger: Logging):
+    def __init__(self, configs: DictConfigs):
         super().__init__()
-
-        self.logger = logger
-        self.evaluation = build_evaluation(configs)
 
         # Build for trainer
         model = self.build_model(configs)
         criterion = self.build_criterion(configs)
         optimizer = self.build_optimizer(configs, model)
-        lr_scheduler = self.build_lr_scheduler(configs, optimizer)
+        loader = self.build_data_loader(configs, is_train=True)
+
         self._trainer = SimpleTrainer(
             configs=configs,
-            logger=self.logger,
             model=model,
             optimizer=optimizer,
-            criterion=criterion
+            criterion=criterion,
+            loader=loader
         )
 
-        # Build data-loader
-        self.train_loader = self.build_data_loader(configs, is_train=True)
-        self.test_loader = self.build_data_loader(configs, is_train=False)
-
         # Settings
-        self.iter = 0
+        self.epoch = 0
         self.start_epoch = 0
-        self.max_epoch = configs["SOLVER"]["EPOCHS"]
-        self.device = configs["MODEL"]["DEVICE"]
-        self.save_epochs = configs["SOLVER"]["CHECKPOINT_PERIOD"]
+        self.max_epoch = configs.user.training.epochs
+        self.device = configs.user.model.device
+        self.eval_checkpoint_period = configs.user.training.checkpoint_period
+
+        self._checkpointer = CheckPointer(max_epoch=self.max_epoch, save_dir=configs.user.training.output_dir)
+        self._testor = Testor(
+            configs=configs,
+            loader=self.build_data_loader(configs, is_train=False),
+            evaluator=self.build_evaluation(configs)
+        )
+        self.logger = logging.getLogger(__name__)
+
+        self.register_hooks(self.build_hooks())
+
+    def build_hooks(self):
+        hook_block = [
+            hooks.EpochTimer(),
+            # for after_step.
+            hooks.EvalHook(self._testor, self.eval_checkpoint_period),
+            hooks.PeriodicCheckpointer(self._checkpointer, self.eval_checkpoint_period),
+        ]
+        return hook_block
 
     def train(self):
         super().train(self.start_epoch, self.max_epoch)
 
-    def before_train(self):
-        self._trainer.before_train()
-        self.logger.debug('Train Start!')
-
-    def before_step(self):
-        super().before_step()
-        self.epoch_data = copy.deepcopy(self.train_loader)
-
     def run_step(self):
-        for iter, (img, mask) in enumerate(self.epoch_data):
-            img = img.to(self.device)
-            mask = mask.to(self.device)
-            self._trainer.run_step(x=img, target=mask)
-            self.iter += iter
-
-    def after_step(self):
-        save = False
-        losses = 0.
-        gt_list, fuse_list = [], []
-        self.eval_data = copy.deepcopy(self.test_loader)
-        if self.epoch % self.save_epochs == 0:
-            for idx, (img, mask) in enumerate(self.eval_data):
-                img = img.to(self.device)
-                mask = mask.to(self.device)
-                if idx == len(self.test_loader)-1:
-                    save = True
-                loss, fuse_mask = self._trainer.after_step(x=img, target=mask, save=save)
-                gt_list.append(mask), fuse_list.append(fuse_mask)
-                losses += loss
-
-        eval_results = self.evaluation(
-            gt_masks=torch.cat(gt_list),
-            pred_masks=torch.cat(fuse_list)
-        ).calculate_f1score()
-        self.logger.debug(f'[{self.epoch}/{self.max_epoch}] VALIDATION LOSS :: {losses / len(self.test_loader)}')
-        self.logger.debug(f'[{self.epoch}/{self.max_epoch}] VALIDATION F1 SCORE :: {eval_results}')
-
-    def after_train(self):
-        self._trainer.after_train()
-        self.logger.debug('Train Finish!')
+        self._trainer.epoch = self.epoch
+        self._trainer.run_step()
 
     @classmethod
     def build_model(cls, configs: DictConfigs):
@@ -108,11 +107,11 @@ class DefaultTrainer(TrainerBase):
         return build_optimizer(configs, model)
 
     @classmethod
-    def build_lr_scheduler(cls, configs: DictConfigs, optimizer):
-        # It now calls :func: 'u2net.solver.build_lr_scheduler'.
-        return build_lr_scheduler(configs, optimizer)
-
-    @classmethod
     def build_data_loader(cls, configs: DictConfigs, is_train: bool):
         # It now calls :func: 'u2net.data.build_loader'.
         return build_loader(configs, is_train=is_train)
+
+    @classmethod
+    def build_evaluation(cls, configs: DictConfigs):
+        # It now calls :func: 'u2net.evaluation.build_evaluation'.
+        return build_evaluation(configs)
