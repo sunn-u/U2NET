@@ -11,7 +11,8 @@ from u2net.engine.train_loop import HookBase
 __all__ = [
     "EpochTimer",
     "PeriodicCheckpointer",
-    "EvalHook"
+    "EvalHook",
+    "CommonWriter"
 ]
 
 class EpochTimer(HookBase):
@@ -90,3 +91,22 @@ class EvalHook(HookBase):
     def after_train(self):
         eval_score = self.eval(model=self.trainer._trainer.model)
         self.trainer.storage.put_scalars(scores=eval_score)
+
+
+class CommonWriter(HookBase):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+
+    def before_train(self):
+        self.logger.info("Start Training!")
+
+    def after_step(self):
+        storage = self.trainer.storage[self.trainer.epoch]
+
+        logs = f"[{self.trainer.epoch}/{self.trainer.max_epoch}]: \n"
+        for key, value in storage:
+            logs += f"{key}: {value}"
+        self.logger.info(logs)
+
+    def after_train(self):
+        self.logger.info("Training is over. Well done!")

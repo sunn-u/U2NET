@@ -81,6 +81,7 @@ class DefaultTrainer(TrainerBase):
             # for after_step.
             hooks.EvalHook(self._testor, self.eval_checkpoint_period),
             hooks.PeriodicCheckpointer(self._checkpointer, self.eval_checkpoint_period),
+            hooks.CommonWriter()
         ]
         return hook_block
 

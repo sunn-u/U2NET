@@ -46,9 +46,6 @@ class TrainerBase(object):
         return self._hooks.extend(hooks)
 
     def train(self, start_epoch: int, max_epoch: int):
-        logger = logging.getLogger(__name__)
-        logger.info("Start Training!")
-
         self.epoch = self.start_epoch = start_epoch
         self.max_epoch = max_epoch
 
