@@ -11,7 +11,6 @@ def build_trainer(configs: DictConfigs):
 
 
 def build_tester(configs: DictConfigs):
-    # todo : trainer 에 test 하는 부분만 빼서 사용할 수 있게 수정
     trainer_name = configs.model.trainer.name
     testor = TRAINER_REGISTRY.get(trainer_name)(configs)
     return testor
