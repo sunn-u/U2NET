@@ -105,8 +105,6 @@ class SimpleTrainer(TrainerBase):
         self.model.train()
         losses = 0.
         for idx, (data, target) in enumerate(self.loader):
-            if idx == 2:
-                break
             data = data.to(self.configs.user.model.device)
             target = target.to(self.configs.user.model.device)
 
