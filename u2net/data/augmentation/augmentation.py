@@ -25,13 +25,13 @@ class HorizontalFlipping(object):
 
 
 class Augmentation(object):
-    def __init__(self, type: str, save: bool, data_dir: str, multiple: float, funcs=None):
+    def __init__(self, type: str, save: bool, save_dir: str, multiple: float, funcs=None):
         self.type = type
         self.save = save
         self.funcs = funcs
         self.multiple = multiple
 
-        self.augmentation_img_file, self.augmentation_mask_file = self._get_augmentation_dir(data_dir)
+        self.augmentation_img_file, self.augmentation_mask_file = self._get_augmentation_dir(save_dir)
 
     def __call__(self, dataset_list: list, multiple=2):
         '''

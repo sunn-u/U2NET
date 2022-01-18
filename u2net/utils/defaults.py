@@ -19,7 +19,7 @@ def merge_configs(personal_config: dict, default_config: DictConfigs) -> DictCon
 
 
 def setup_configs(configs: DictConfigs) -> DictConfigs:
-    configs["MODEL"]["DEVICE"] = 'cuda' if torch.cuda.is_available() else 'cpu'
+    configs.user.model.device = 'cuda' if torch.cuda.is_available() else 'cpu'
     return configs
 
 

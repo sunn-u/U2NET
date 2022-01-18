@@ -1,17 +1,17 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
-from ..data.types import DictConfigs, Logging
+from ..data.types import DictConfigs
 from .trainer import TRAINER_REGISTRY
 
 
-def build_trainer(configs: DictConfigs, logger: Logging):
-    trainer_name = configs["TRAINER"]["NAME"]
-    trainer = TRAINER_REGISTRY.get(trainer_name)(configs, logger)
+def build_trainer(configs: DictConfigs):
+    trainer_name = configs.model.trainer.name
+    trainer = TRAINER_REGISTRY.get(trainer_name)(configs)
     return trainer
 
 
-def build_tester(configs: DictConfigs, logger: Logging):
+def build_tester(configs: DictConfigs):
     # todo : trainer 에 test 하는 부분만 빼서 사용할 수 있게 수정
-    trainer_name = configs["TRAINER"]["NAME"]
-    testor = TRAINER_REGISTRY.get(trainer_name)(configs, logger)
+    trainer_name = configs.model.trainer.name
+    testor = TRAINER_REGISTRY.get(trainer_name)(configs)
     return testor

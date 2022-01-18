@@ -6,7 +6,7 @@ from torchvision.transforms import functional as F
 from torchvision.transforms.functional import _interpolation_modes_from_int
 from fvcore.common.registry import Registry
 
-from ..types import PIL, Tensor
+from ..types import PIL, Tensor, DictConfigs
 
 TRANSFORMS_REGISTRY = Registry("TRANSFORMS")
 TRANSFORMS_REGISTRY.__doc__ = " Registry for Transforms "
@@ -24,7 +24,7 @@ class ToTensor(object):
 
 @TRANSFORMS_REGISTRY.register()
 class Resize(object):
-    def __init__(self, value: dict):
+    def __init__(self, value: DictConfigs):
         '''
         :param value:
             size: int

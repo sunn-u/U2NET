@@ -5,7 +5,7 @@ from ..types import PIL, DictConfigs
 
 
 def build_transforms(configs: DictConfigs):
-    transforms_configs = configs["DATALOADER"]["TRANSFORMS"]
+    transforms_configs = configs.data.dataloader.transforms
     funcs = []
     for name, value in transforms_configs.items():
         if value is not None:

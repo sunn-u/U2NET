@@ -6,19 +6,23 @@ from ..data.types import DictConfigs
 
 
 def build_optimizer(configs: DictConfigs, model):
+    parameters = configs.solver.optimizer.parameters
+
     optimizer = optim.Adam(
         model.parameters(),
-        lr=configs["SOLVER"]["OPTIMIZER"]["BASE_LR"],
-        betas=configs["SOLVER"]["OPTIMIZER"]["BETAS"],
-        eps=configs["SOLVER"]["OPTIMIZER"]["EPS"],
-        weight_decay=configs["SOLVER"]["OPTIMIZER"]["WEIGHT_DECAY"]
+        lr=parameters.base_lr,
+        betas=parameters.betas,
+        eps=parameters.eps,
+        weight_decay=parameters.weight_decay
     )
     return optimizer
 
 
 def build_lr_scheduler(configs: DictConfigs, optimizer):
+    parameters = configs.solver.scheduler.parameters
+
     scheduler = optim.lr_scheduler.LambdaLR(
         optimizer=optimizer,
-        lr_lambda=lambda epoch: configs["SOLVER"]["SCHEDULER"]["FACTOR"] ** epoch
+        lr_lambda=lambda epoch: parameters.factor ** epoch
     )
     return scheduler
