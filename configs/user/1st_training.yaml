@@ -5,11 +5,16 @@ model:
 data:
   dataset:
     train:
+      image: C:\Users\tjsnt\PycharmProjects\U2NET_MY\data\DUTS-TE\DUTS-TE-Image
+      label: C:\Users\tjsnt\PycharmProjects\U2NET_MY\data\DUTS-TE\DUTS-TE-Mask
     test:
+      image: C:\Users\tjsnt\PycharmProjects\U2NET_MY\data\DUTS-TE\DUTS-TE-Image
+      label: C:\Users\tjsnt\PycharmProjects\U2NET_MY\data\DUTS-TE\DUTS-TE-Mask
   dataloader:
     augmentation:
       use: False
       save: True
+      save_dir: C:\Users\tjsnt\PycharmProjects\U2NET_MY\data\
       multiple: 1.0
       func:
         HorizontalFlipping: True
@@ -17,4 +22,4 @@ training:
   epochs: 100
   ims_per_batch: 32
   checkpoint_period: 1
-  output_dir:
+  output_dir: C:\Users\tjsnt\PycharmProjects\U2NET_MY\outputs\test
