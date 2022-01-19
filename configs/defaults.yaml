@@ -1,3 +1,6 @@
+hydra:
+  run:
+    dir: ${user.training.output_dir}
 defaults:
   - user:
   - data: duts

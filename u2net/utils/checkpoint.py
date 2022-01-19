@@ -2,38 +2,46 @@
 
 import os
 import torch
+import logging
 
-from u2net.data.types import Logging
+from u2net.utils.logger import set_logger
 from u2net.modeling.base import weight_init_xavier
 
 
 class CheckPointer(object):
-    def __init__(self, save_dir: str, logger: Logging):
+    def __init__(self, max_epoch: int, save_dir: str):
+        self.max_epoch = max_epoch
         self.save_dir = save_dir
-        self.logger = logger
+        self.best_score = -1
 
-    def save(self, model, epoch: int, last: bool):
+        self.logger = logging.getLogger(__name__)
+        self.best_logger = set_logger(level=2, logger_name='best_model', save_dir=save_dir)
+
+    def save(self, model, epoch: int, score: float):
         save_file = os.path.join(self.save_dir, f'{str(epoch).zfill(7)}.pth')
         torch.save(model, save_file)
-        if last:
-            self._tag_final_checkpoint(model,)
-        else:
-            self._tag_last_checkpoint(model,)
+        self._tag_last_checkpoint(model)
 
-        self.logger.debug(f"Saving Model to {save_file}")
+        if score > self.best_score:
+            self.best_score = score
+            self._tag_best_model(model)
+
+        if epoch == self.max_epoch:
+            self._tag_final_checkpoint(model)
+        self.logger.info(f"Saving Model to {save_file}")
 
     def load(self, model, weight_dir=None):
         if weight_dir is not None:
             assert os.path.exists(weight_dir) == True
-            self.logger.debug(f"Loading Model from {weight_dir}.")
+            self.logger.info(f"Loading Model from {weight_dir}.")
             return torch.load(model, weight_dir)
 
         if self._has_checkpoint():
             checkpoint_file = self._get_checkpoint_file()
-            self.logger.debug(f"Loading Checkpoint from {checkpoint_file}.")
+            self.logger.info(f"Loading Checkpoint from {checkpoint_file}.")
             return torch.load(model, checkpoint_file)
         else:
-            self.logger.debug(f"No checkpoint found. Initializing model from scratch.")
+            self.logger.info(f"No checkpoint found. Initializing model from scratch.")
             model = self._apply_init(model)
             return model
 
@@ -44,6 +52,11 @@ class CheckPointer(object):
     def _tag_last_checkpoint(self, model):
         save_file = os.path.join(self.save_dir, 'last_checkpoint.pth')
         torch.save(model, save_file)
+
+    def _tag_best_model(self, model):
+        save_file = os.path.join(self.save_dir, 'best_model.pth')
+        torch.save(model, save_file)
+        self.best_logger.info(f"{save_file}: {self.best_score}")
 
     def _has_checkpoint(self):
         return os.path.exists(os.path.join(self.save_dir, 'last_checkpoint.pth'))
