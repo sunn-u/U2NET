@@ -5,7 +5,7 @@ import torch
 import logging
 
 from u2net.utils.logger import set_logger
-from u2net.modeling.base import weight_init_xavier
+from u2net.layers.layer import weight_init_xavier
 
 
 class CheckPointer(object):
