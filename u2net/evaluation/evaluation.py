@@ -24,7 +24,7 @@ class F1_SCORE(object):
         self.smooth = smooth
 
     def __call__(self, gt_masks, pred_masks):
-        batch, _, shape = gt_masks.shape
+        batch, _, shape = gt_masks.shape[:3]
         thresholds = torch.linspace(0, 1 - self.smooth, shape)
 
         precision = self.calculate_precision(batch, shape, thresholds, pred_masks, gt_masks)
