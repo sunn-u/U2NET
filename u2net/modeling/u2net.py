@@ -59,7 +59,7 @@ class U2NET(nn.Module):
         sups.append(x)
 
         for idx in range(len(self.decoder_blocks)):
-            x = torch.concat((encoder_features[idx], x), dim=1)
+            x = torch.cat((encoder_features[idx], x), dim=1)
             batch, channel, height, width = x.shape
             x = F.interpolate(x, size=(height*2, width*2), mode='bilinear', align_corners=True)
             x = self.decoder_blocks[idx](x)

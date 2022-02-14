@@ -101,11 +101,11 @@ class CommonWriter(HookBase):
         self.logger.info("Start Training!")
 
     def after_step(self):
-        storage = self.trainer.storage[self.trainer.epoch]
+        storage = self.trainer.storage.history[self.trainer.epoch]
 
         logs = f"[{self.trainer.epoch}/{self.trainer.max_epoch}]: \n"
-        for key, value in storage:
-            logs += f"{key}: {value}"
+        for key, value in storage.items():
+            logs += f"{key}: {value} "
         self.logger.info(logs)
 
     def after_train(self):

@@ -56,7 +56,7 @@ class TrainerBase(object):
                     self.before_step()
                     self.run_step()
                     self.after_step()
-                self.epoch += 1
+                    self.epoch += 1
             finally:
                 self.after_train()
 
@@ -113,10 +113,10 @@ class SimpleTrainer(TrainerBase):
             losses += loss
         losses /= len(self.loader)
 
-        self._update_results(loss_dict=dict(loss=losses))
+        self._update_results(dict(loss=losses))
 
     def _update_results(self, loss_dict: dict):
         storage = get_event_storage()
         storage.put_scalars(
-            loss={k: v.detach().cpu.item() for k, v in loss_dict.items()}
+            loss={k: float(v.detach().cpu()) for k, v in loss_dict.items()}
         )

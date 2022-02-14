@@ -10,7 +10,7 @@ LOSS_REGISTRY.__doc__ = " Registry for Loss "
 @LOSS_REGISTRY.register()
 class BinaryCrossEntropy(object):
     def __init__(self):
-        self.loss = nn.BCELoss(weight=None, size_average=None, reduce=None, reduction='mean')
+        self.criterion = nn.BCELoss(weight=None, size_average=None, reduce=None, reduction='mean')
 
     def __call__(self, gt_mask, pred_masks, fuse_mask):
         loss = 0.

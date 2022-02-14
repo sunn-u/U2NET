@@ -13,5 +13,5 @@ def build_model(configs: DictConfigs):
 
 def build_criterion(configs: DictConfigs):
     loss_name = configs.model.loss.name
-    criterion = LOSS_REGISTRY.get(loss_name)
+    criterion = LOSS_REGISTRY.get(loss_name)()
     return criterion
