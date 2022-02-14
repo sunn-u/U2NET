@@ -34,12 +34,12 @@ class CheckPointer(object):
         if weight_dir is not None:
             assert os.path.exists(weight_dir) == True
             self.logger.info(f"Loading Model from {weight_dir}.")
-            return torch.load(model, weight_dir)
+            return torch.load(weight_dir)
 
         if self._has_checkpoint():
             checkpoint_file = self._get_checkpoint_file()
             self.logger.info(f"Loading Checkpoint from {checkpoint_file}.")
-            return torch.load(model, checkpoint_file)
+            return torch.load(checkpoint_file)
         else:
             self.logger.info(f"No checkpoint found. Initializing model from scratch.")
             model = self._apply_init(model)
