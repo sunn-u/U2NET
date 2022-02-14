@@ -103,7 +103,7 @@ class CommonWriter(HookBase):
     def after_step(self):
         storage = self.trainer.storage.history[self.trainer.epoch]
 
-        logs = f"[{self.trainer.epoch}/{self.trainer.max_epoch}]: \n"
+        logs = f"[{self.trainer.epoch}/{self.trainer.max_epoch}]: "
         for key, value in storage.items():
             logs += f"{key}: {value} "
         self.logger.info(logs)

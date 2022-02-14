@@ -1,5 +1,6 @@
 # Coding by SunWoo(tjsntjsn20@gmail.com)
 
+import torch
 import logging
 import weakref
 
@@ -89,7 +90,7 @@ class SimpleTrainer(TrainerBase):
             - 3. Update the model with the optimizer.
     '''
 
-    def __init__(self, configs, model, optimizer, criterion, loader):
+    def __init__(self, configs, model, optimizer, criterion, loader, test_loader, evaluator):
         super().__init__()
 
         self.configs = configs
@@ -97,6 +98,10 @@ class SimpleTrainer(TrainerBase):
         self.optimizer = optimizer
         self.criterion = criterion
         self.loader = loader
+
+        # [2022-02-14] solution for OOM.
+        self.test_loader = test_loader
+        self.evaluator = evaluator
 
     def run_step(self):
         self.model.train()
@@ -115,8 +120,26 @@ class SimpleTrainer(TrainerBase):
 
         self._update_results(dict(loss=losses))
 
+        # [2022-02-14] Temp solution for OOM.
+        self.model.eval()
+
+        gt_list, fuse_list = [], []
+        for data, target in self.test_loader:
+            data = data.to(self.configs.user.model.device)
+            _, fuse_mask = self.model(data)
+            gt_list.append(target.to(self.configs.user.model.device))
+            fuse_list.append(fuse_mask)
+
+        eval_results = self.evaluator(gt_masks=torch.cat(gt_list), pred_masks=torch.cat(fuse_list))
+        self._update_temp_results(dict(scores=eval_results))
+
     def _update_results(self, loss_dict: dict):
         storage = get_event_storage()
         storage.put_scalars(
             loss={k: float(v.detach().cpu()) for k, v in loss_dict.items()}
         )
+
+    # [2022-02-14] Temp solution for OOM.
+    def _update_temp_results(self, score_dict: dict):
+        storage = get_event_storage()
+        storage.put_scalars(scores=score_dict['scores'])

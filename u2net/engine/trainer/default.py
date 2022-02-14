@@ -55,7 +55,11 @@ class DefaultTrainer(TrainerBase):
             model=model,
             optimizer=optimizer,
             criterion=criterion,
-            loader=loader
+            loader=loader,
+
+            # [2022-02-14] solution for OOM.
+            test_loader=self.build_data_loader(configs, is_train=False),
+            evaluator=self.build_evaluation(configs)
         )
 
         # Settings
@@ -66,11 +70,11 @@ class DefaultTrainer(TrainerBase):
         self.eval_checkpoint_period = configs.user.training.checkpoint_period
 
         self._checkpointer = CheckPointer(max_epoch=self.max_epoch, save_dir=configs.user.training.output_dir)
-        self._testor = Testor(
-            configs=configs,
-            loader=self.build_data_loader(configs, is_train=False),
-            evaluator=self.build_evaluation(configs)
-        )
+        # self._testor = Testor(
+        #     configs=configs,
+        #     loader=self.build_data_loader(configs, is_train=False),
+        #     evaluator=self.build_evaluation(configs)
+        # )
         self.logger = logging.getLogger(__name__)
 
         self.register_hooks(self.build_hooks())
@@ -79,7 +83,7 @@ class DefaultTrainer(TrainerBase):
         hook_block = [
             hooks.EpochTimer(),
             # for after_step.
-            hooks.EvalHook(self._testor, self.eval_checkpoint_period),
+            # hooks.EvalHook(self._testor, self.eval_checkpoint_period),
             hooks.PeriodicCheckpointer(self._checkpointer, self.eval_checkpoint_period),
             hooks.CommonWriter()
         ]
